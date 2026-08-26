@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عيد ميلاد سعيد يا أحلى صاحبة!</title>
+    <!-- تضمين خط عربي أنيق -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- مكتبة الألعاب النارية (Canvas Confetti) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-image: url('bg .jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 10px;
+            color: #4a4a4a;
+            text-align: center;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* زر الموسيقى والتحكم */
+        .music-control {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: #ff6b8b;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 139, 0.4);
+            z-index: 1000;
+            transition: 0.3s;
+        }
+        .music-control:hover {
+            transform: scale(1.05);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-image: url('card-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 25px 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+            margin: 20px auto;
+        }
+
+        .heart {
+            font-size: 3em;
+            color: #ff4757;
+            animation: bounce 1s infinite alternate;
+            margin-bottom: 5px;
+        }
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+
+        h1 {
+            color: #ff4757;
+            font-size: 2.1em;
+            margin-bottom: 15px;
+            font-weight: 900;
+            line-height: 1.4;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .section {
+            margin-top: 25px;
+            padding: 20px 15px;
+            background: rgba(255, 245, 247, 0.9);
+            border-radius: 15px;
+            border: 2px dashed #ffb8c6;
+        }
+
+        .section h2 {
+            color: #ff6b8b;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+
+        /* تنسيق الصور */
+        .photos-grid {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .single-photo-container {
+            background: white;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            flex: 1;
+            min-width: 200px;
+        }
+        .single-photo-container a {
+            display: block;
+            position: relative;
+            cursor: pointer;
+        }
+        .single-photo-container img {
+            width: 100%;
+            height: auto;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+        .single-photo-container img:hover {
+            transform: scale(1.02);
+        }
+        .photo-hint {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 6px;
+            margin-bottom: 0;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 0.95em;
+            color: #888;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        /* تصميم البالونات المتحركة في الخلفية */
+        .balloon-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .balloon {
+            position: absolute;
+            bottom: -150px;
+            width: 40px;
+            height: 50px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            animation: flyUp 10s infinite linear;
+            opacity: 0.8;
+        }
+        .balloon::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 18px;
+            width: 2px;
+            height: 12px;
+            background: #aaa;
+        }
+        @keyframes flyUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-110vh) rotate(20deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- زر تشغيل/إيقاف الموسيقى -->
+    <button class="music-control" id="musicBtn" onclick="toggleMusic()">🔊 تشغيل الأغنية</button>
+
+    <!-- عنصر الصوت -->
+    <audio id="birthdayAudio" loop>
+        <source src="Albumaty.Com_amrw_dyab_lwla_albnat_ya.mp3" type="audio/mp3">
+        متصفحك لا يدعم تشغيل الصوت.
+    </audio>
+
+    <!-- بالونات متحركة في الخلفية -->
+    <div class="balloon-container" id="balloonContainer"></div>
+
+    <div class="container">
+        <div class="heart">❤️</div>
+        <h1>كل سنة وأنتي طيبة يا أجمل صاحبة و مهندسة</h1>
+        <p>النهارده مش أي يوم عادي، ده أجمل يوم في السنة لان فطوط اتولدت ونورت حياتنا كلنا.</p>
+
+        <!-- صاحبي يا صاحبي -->
+        <div class="section">
+            <h2>رسالة من القلب 💌</h2>
+            <p>أنا بجد محظوظ جداً بوجودك جنبي في كل الأوقات وظبطيني ف كذا حاجة بردك 😂😂😂. وياااه علي الذكريات الحلوة اللي جمعتنا وهتفضل تجمعنا العمر كله.</p>
+        </div>
+
+        <!-- قسم الصور المميزة (صورتين) -->
+        <div class="section">
+            <h2> 😂 اي رايك كدا</h2>
+            <div class="photos-grid">
+                <!-- الصورة الأولى -->
+                <div class="single-photo-container">
+                    <a href="1.jpg" target="_blank">
+                        <img src="1.jpg" alt="صورة عيد الميلاد 1">
+                    </a>
+                    <p class="photo-hint">😂😂😂 البضاعة يا ريس✨</p>
+                </div>
+                <!-- الصورة التانية -->
+                <div class="single-photo-container">
+                    <a href="2 (2).jpg" target="_blank">
+                        <img src="2 (2).jpg" alt="صورة عيد الميلاد 2">
+                    </a>
+                    <p class="photo-hint">😂😂 مش هخليه يظهر بردك مش ناقصة بيض هنا كمان كل سنة وانتي طيبة  </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ايوة يعم ي يارب -->
+        <div class="section">
+            <h2>أتمنى لكِ السنة دي... ✨</h2>
+            <p>كل السعادة والنجاح وتحقي كل حاجة بتتمناها وأكتر بكتير، وفضلي دايماً منورة الدنيا بوجودك الجميل ده.</p>
+        </div>
+
+        <div class="footer">
+            <p> كل سنة وأنتي أختي وصحبتي المقربة</p>
+        </div>
+    </div>
+
+    <script>
+        // إطلاق الألعاب النارية (الصواريخ) عند فتح الموقع
+        function launchFireworks() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        window.onload = function() {
+            launchFireworks();
+            createBalloons();
+        };
+
+        // توليد البالونات المتحركة في الخلفية
+        function createBalloons() {
+            const container = document.getElementById('balloonContainer');
+            const colors = ['#ff4757', '#ff6b8b', '#ffa502', '#2ed573', '#1e90ff', '#9b59b6', '#ff9ff3'];
+            
+            for (let i = 0; i < 15; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.left = Math.random() * 100 + 'vw';
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.animationDuration = (8 + Math.random() * 6) + 's';
+                balloon.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(balloon);
+            }
+        }
+
+        // التحكم في الموسيقى
+        const audio = document.getElementById('birthdayAudio');
+        audio.currentTime = 32; 
+        const musicBtn = document.getElementById('musicBtn');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                musicBtn.innerHTML = "🔊 تشغيل الأغنية";
+                isPlaying = false;
+            } else {
+                audio.play().then(() => {
+                    musicBtn.innerHTML = "🔇 إيقاف الأغنية";
+                    isPlaying = true;
+                }).catch(error => {
+                    alert("اضغطِ في أي مكان في الصفحة لتشغيل الصوت!");
+                });
+            }
+        }
+
+        document.body.addEventListener('click', function() {
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    musicBtn.innerHTML = "🔇 إيقاف الأغنية";
+                    isPlaying = true;
+                }).catch(e => {});
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
